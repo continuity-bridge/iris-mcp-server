@@ -1,0 +1,39 @@
+{
+  "name": "iris-mcp-server",
+  "version": "0.1.0",
+  "description": "Iris MCP Gateway - Multi-backend MCP server for Google Drive write, Notion, and more",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "build:oauth": "tsc --skipLibCheck src/oauth-server.ts src/oauth/*.ts src/backends/google-drive.ts --outDir dist --module ESNext --target ES2022 --moduleResolution node --esModuleInterop",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "oauth": "node dist/oauth-server.js",
+    "dev:oauth": "npm run build:oauth && node dist/oauth-server.js",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "google-drive",
+    "notion",
+    "iris"
+  ],
+  "author": "Jerry Jackson (Uncle Tallest)",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "better-sqlite3": "^11.10.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "googleapis": "^144.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.0",
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.5.4"
+  }
+}
