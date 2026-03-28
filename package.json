@@ -22,6 +22,14 @@
   ],
   "author": "Jerry Jackson (Uncle Tallest)",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/continuity-bridge/iris-mcp-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/continuity-bridge/iris-mcp-server/issues"
+  },
+  "homepage": "https://github.com/continuity-bridge/iris-mcp-server#readme",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
     "better-sqlite3": "^11.10.0",
