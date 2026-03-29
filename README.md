@@ -6,6 +6,10 @@
 
 Iris solves the free-tier MCP connector limitation by acting as a gateway: users connect ONE custom connector (Iris) and get access to multiple backend services with full read/write capabilities.
 
+**Two Modes:**
+- **Stdio Mode** (Claude Desktop) - Production ready ✅
+- **HTTP Mode** (Browser claude.ai) - Prototype 🧪 [See HTTP-MODE-GUIDE.md](./HTTP-MODE-GUIDE.md)
+
 ### What Iris Provides
 
 **Google Drive Backend:**
@@ -53,6 +57,18 @@ npm run build
 ```bash
 npx @modelcontextprotocol/inspector node dist/index.js
 ```
+
+### HTTP Mode Setup (For Browser Claude.ai)
+
+To use Iris with browser-based claude.ai:
+
+```bash
+# After completing OAuth setup above
+npm run setup:browser  # Interactive wizard
+npm run http           # Start HTTP server
+```
+
+See [HTTP-MODE-GUIDE.md](./HTTP-MODE-GUIDE.md) for complete browser integration guide.
 
 ## Configuration
 

@@ -7,10 +7,14 @@
   "scripts": {
     "build": "tsc",
     "build:oauth": "tsc --skipLibCheck src/oauth-server.ts src/oauth/*.ts src/backends/google-drive.ts --outDir dist --module ESNext --target ES2022 --moduleResolution node --esModuleInterop",
+    "build:http": "tsc --skipLibCheck src/http-server.ts src/backends/*.ts src/utils/*.ts --outDir dist --module ESNext --target ES2022 --moduleResolution node --esModuleInterop",
     "dev": "tsc --watch",
     "start": "node dist/index.js",
     "oauth": "node dist/oauth-server.js",
+    "http": "node dist/http-server.js",
     "dev:oauth": "npm run build:oauth && node dist/oauth-server.js",
+    "dev:http": "npm run build:http && node dist/http-server.js",
+    "setup:browser": "node iris-setup-browser",
     "test": "echo \"No tests yet\" && exit 0"
   },
   "keywords": [
@@ -33,6 +37,7 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
     "better-sqlite3": "^11.10.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "googleapis": "^144.0.0",
@@ -40,6 +45,7 @@
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.0",
+    "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/node": "^22.0.0",
     "typescript": "^5.5.4"

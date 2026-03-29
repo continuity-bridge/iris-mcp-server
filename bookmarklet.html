@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iris Bookmarklet - Save to Drive</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 { color: #333; }
+        .bookmarklet {
+            background: #f5f5f5;
+            border: 2px dashed #999;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .bookmarklet a {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .bookmarklet a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+        .instructions {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .instructions ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .code {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 12px;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🌈 Iris - Save to Google Drive</h1>
+    <p>This bookmarklet lets you save selected text from claude.ai directly to Google Drive.</p>
+
+    <div class="bookmarklet">
+        <h2>📌 Drag this to your bookmarks bar:</h2>
+        <a href="javascript:(function(){const%20s=window.getSelection().toString()||document.body.innerText;if(!s){alert('No%20text%20selected!');return}const%20p=prompt('Save%20to%20Drive%20path:','notes/'+new%20Date().toISOString().split('T')[0]+'.txt');if(!p)return;const%20b=document.createElement('div');b.style.cssText='position:fixed;top:20px;right:20px;background:linear-gradient(135deg,%23667eea%200%,%23764ba2%20100%);color:white;padding:20px;border-radius:8px;box-shadow:0%204px%2012px%20rgba(0,0,0,0.3);z-index:999999;font-family:sans-serif;max-width:300px';b.innerHTML='<div%20style=%22font-weight:bold;margin-bottom:10px%22>💾%20Saving%20to%20Drive...</div><div%20style=%22font-size:12px;opacity:0.9%22>'+p+'</div>';document.body.appendChild(b);fetch('http://localhost:3001/api/drive/write',{method:'POST',headers:{'Content-Type':'application/json',Cookie:document.cookie},body:JSON.stringify({path:p,content:s})}).then(r=>r.json()).then(d=>{b.style.background='linear-gradient(135deg,%2328a745%200%,%2320c997%20100%)';b.innerHTML='<div%20style=%22font-weight:bold;margin-bottom:10px%22>✅%20Saved!</div><div%20style=%22font-size:12px;opacity:0.9%22>'+p+'</div><a%20href=%22'+d.webViewLink+'%22%20target=%22_blank%22%20style=%22color:white;text-decoration:underline;font-size:12px;display:block;margin-top:10px%22>Open%20in%20Drive%20→</a>';setTimeout(()=>b.remove(),5000)}).catch(e=>{b.style.background='linear-gradient(135deg,%23dc3545%200%,%23c82333%20100%)';b.innerHTML='<div%20style=%22font-weight:bold;margin-bottom:10px%22>❌%20Error</div><div%20style=%22font-size:11px%22>'+e.message+'</div><div%20style=%22font-size:10px;margin-top:10px;opacity:0.8%22>Is%20Iris%20HTTP%20server%20running?</div>';setTimeout(()=>b.remove(),7000)})})();">
+            💾 Save to Drive
+        </a>
+        <p style="font-size: 14px; color: #666; margin-top: 15px;">
+            ← Drag this button to your bookmarks bar
+        </p>
+    </div>
+
+    <div class="instructions">
+        <h3>📖 How to Use</h3>
+        <ol>
+            <li><strong>Drag the button above</strong> to your browser's bookmarks bar</li>
+            <li><strong>Make sure Iris HTTP server is running:</strong>
+                <div class="code" style="margin: 10px 0;">npm run http</div>
+            </li>
+            <li><strong>Go to claude.ai</strong> and select some text</li>
+            <li><strong>Click the bookmarklet</strong> in your bookmarks bar</li>
+            <li><strong>Enter the Drive path</strong> when prompted (e.g., "notes/today.txt")</li>
+            <li><strong>Watch it save!</strong> 🎉</li>
+        </ol>
+    </div>
+
+    <div class="warning">
+        <h3>⚠️ Prerequisites</h3>
+        <ul>
+            <li>Iris HTTP server must be running on <code>localhost:3001</code></li>
+            <li>You must have completed OAuth setup (<code>npm run oauth</code>)</li>
+            <li>You must have configured browser session (<code>npm run setup:browser</code>)</li>
+            <li>You must be logged into claude.ai in the same browser</li>
+        </ul>
+    </div>
+
+    <div class="success">
+        <h3>✨ Features</h3>
+        <ul>
+            <li><strong>Smart defaults:</strong> Suggests today's date as filename</li>
+            <li><strong>Visual feedback:</strong> Shows save progress with animations</li>
+            <li><strong>Quick access:</strong> Click "Open in Drive" to view saved file</li>
+            <li><strong>Error handling:</strong> Clear messages if something goes wrong</li>
+            <li><strong>Auto-dismiss:</strong> Notification disappears after 5 seconds</li>
+        </ul>
+    </div>
+
+    <h2>🔧 Testing</h2>
+    
+    <h3>1. Test HTTP Server First</h3>
+    <div class="code">
+# In terminal
+curl http://localhost:3001/health
+    </div>
+    <p>Should return: <code>{"status":"ok","service":"iris-http","mode":"browser",...}</code></p>
+
+    <h3>2. Test from Browser Console</h3>
+    <p>Open claude.ai, press F12, go to Console tab, paste:</p>
+    <div class="code">
+fetch('http://localhost:3001/api/drive/list?path=Feannog', {
+    headers: { Cookie: document.cookie }
+})
+.then(r => r.json())
+.then(d => console.log(d))
+    </div>
+
+    <h3>3. Test the Bookmarklet</h3>
+    <ol>
+        <li>Select some text on claude.ai</li>
+        <li>Click the bookmarklet</li>
+        <li>Enter a test path like "test/bookmarklet-test.txt"</li>
+        <li>Watch for success message!</li>
+    </ol>
+
+    <h2>📝 Unminified Code (For Reference)</h2>
+    <p>Here's what the bookmarklet does (formatted for readability):</p>
+    <div class="code">
+(function() {
+    // Get selected text or entire page
+    const selectedText = window.getSelection().toString() || document.body.innerText;
+    
+    if (!selectedText) {
+        alert('No text selected!');
+        return;
+    }
+    
+    // Prompt for Drive path with smart default
+    const path = prompt(
+        'Save to Drive path:',
+        'notes/' + new Date().toISOString().split('T')[0] + '.txt'
+    );
+    
+    if (!path) return;
+    
+    // Show loading notification
+    const notification = document.createElement('div');
+    notification.style.cssText = 'position:fixed;top:20px;right:20px;' +
+        'background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);' +
+        'color:white;padding:20px;border-radius:8px;' +
+        'box-shadow:0 4px 12px rgba(0,0,0,0.3);z-index:999999;' +
+        'font-family:sans-serif;max-width:300px';
+    notification.innerHTML = 
+        '&lt;div style="font-weight:bold;margin-bottom:10px"&gt;💾 Saving to Drive...&lt;/div&gt;' +
+        '&lt;div style="font-size:12px;opacity:0.9"&gt;' + path + '&lt;/div&gt;';
+    document.body.appendChild(notification);
+    
+    // Send to Iris HTTP server
+    fetch('http://localhost:3001/api/drive/write', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Cookie': document.cookie  // Pass session cookie
+        },
+        body: JSON.stringify({
+            path: path,
+            content: selectedText
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        // Success!
+        notification.style.background = 
+            'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+        notification.innerHTML = 
+            '&lt;div style="font-weight:bold;margin-bottom:10px"&gt;✅ Saved!&lt;/div&gt;' +
+            '&lt;div style="font-size:12px;opacity:0.9"&gt;' + path + '&lt;/div&gt;' +
+            '&lt;a href="' + data.webViewLink + '" target="_blank" ' +
+            'style="color:white;text-decoration:underline;font-size:12px;' +
+            'display:block;margin-top:10px"&gt;Open in Drive →&lt;/a&gt;';
+        setTimeout(() => notification.remove(), 5000);
+    })
+    .catch(error => {
+        // Error
+        notification.style.background = 
+            'linear-gradient(135deg, #dc3545 0%, #c82333 100%)';
+        notification.innerHTML = 
+            '&lt;div style="font-weight:bold;margin-bottom:10px"&gt;❌ Error&lt;/div&gt;' +
+            '&lt;div style="font-size:11px"&gt;' + error.message + '&lt;/div&gt;' +
+            '&lt;div style="font-size:10px;margin-top:10px;opacity:0.8"&gt;' +
+            'Is Iris HTTP server running?&lt;/div&gt;';
+        setTimeout(() => notification.remove(), 7000);
+    });
+})();
+    </div>
+
+    <h2>🐛 Troubleshooting</h2>
+    
+    <h3>Server not responding?</h3>
+    <ul>
+        <li>Check Iris HTTP server is running: <code>npm run http</code></li>
+        <li>Verify it's on port 3001: <code>curl http://localhost:3001/health</code></li>
+    </ul>
+
+    <h3>401 Unauthorized error?</h3>
+    <ul>
+        <li>Session cookie expired - run <code>npm run setup:browser</code> again</li>
+        <li>Make sure you're logged into claude.ai</li>
+        <li>Restart HTTP server after updating session</li>
+    </ul>
+
+    <h3>CORS error?</h3>
+    <ul>
+        <li>HTTP server should allow claude.ai origin</li>
+        <li>Check server logs for CORS errors</li>
+        <li>Try from localhost:3000 instead (allowed in CORS config)</li>
+    </ul>
+
+    <h3>No text selected message?</h3>
+    <ul>
+        <li>Select text on the page before clicking bookmarklet</li>
+        <li>Or let it save entire page text (fallback)</li>
+    </ul>
+
+    <hr style="margin: 40px 0;">
+
+    <p style="text-align: center; color: #666;">
+        <strong>Iris HTTP Mode</strong> - v0.2.0 Prototype<br>
+        Made with 🌈 by Uncle Tallest & Vector
+    </p>
+</body>
+</html>

@@ -1,0 +1,129 @@
+#!/usr/bin/env node
+/**
+ * iris-setup-browser - Configure browser session for HTTP mode
+ * 
+ * Similar to headroom's claude-setup-session, this stores your
+ * claude.ai session cookie so iris-http-server can authenticate.
+ */
+
+import fs from 'fs';
+import path from 'path';
+import readline from 'readline';
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+function question(prompt) {
+  return new Promise((resolve) => {
+    rl.question(prompt, resolve);
+  });
+}
+
+async function main() {
+  console.log('Iris Browser Session Setup');
+  console.log('='.repeat(50));
+  console.log();
+  console.log('This will store your claude.ai session credentials so');
+  console.log('iris-http-server can authenticate browser requests.');
+  console.log();
+  console.log('Required information:');
+  console.log('  1. Organization ID (from Network tab)');
+  console.log('  2. Session cookie (from Application tab)');
+  console.log('  3. Your email address');
+  console.log();
+  
+  // Get instance home
+  const instanceHome = process.env.INSTANCE_HOME || process.env.CLAUDE_HOME || path.join(process.env.HOME, '.claude');
+  
+  // Get organization ID
+  console.log('From Chrome DevTools Network tab:');
+  console.log('  1. Open claude.ai in Chrome');
+  console.log('  2. Press F12 to open DevTools');
+  console.log('  3. Go to Network tab');
+  console.log('  4. Look for: /api/organizations/[ORG_ID]/...');
+  console.log();
+  const orgId = await question('Organization ID: ');
+  
+  if (!orgId.trim()) {
+    console.error('ERROR: Organization ID required');
+    rl.close();
+    process.exit(1);
+  }
+  
+  // Get cookie string
+  console.log();
+  console.log('From Chrome DevTools Network tab:');
+  console.log('  1. Click on any /api/ request');
+  console.log('  2. Go to Headers tab');
+  console.log('  3. Scroll to Request Headers');
+  console.log("  4. Find 'cookie:' header");
+  console.log("  5. Copy the ENTIRE value (it's long!)");
+  console.log();
+  console.log('Should look like: sessionKey=sk-ant-sid...; __cf_bm=...; etc');
+  console.log();
+  const cookieString = await question('Cookie string: ');
+  
+  if (!cookieString.trim() || !cookieString.includes('sessionKey')) {
+    console.error('ERROR: Valid cookie string with sessionKey required');
+    rl.close();
+    process.exit(1);
+  }
+  
+  // Get email
+  console.log();
+  console.log('Your Google account email (for Drive access):');
+  console.log();
+  const userEmail = await question('Email: ');
+  
+  if (!userEmail.trim() || !userEmail.includes('@')) {
+    console.error('ERROR: Valid email required');
+    rl.close();
+    process.exit(1);
+  }
+  
+  // Save credentials
+  const configDir = path.join(instanceHome, 'config');
+  
+  // Create directory if needed
+  if (!fs.existsSync(configDir)) {
+    fs.mkdirSync(configDir, { recursive: true });
+  }
+  
+  const sessionFile = path.join(configDir, 'iris-browser-session.json');
+  
+  const data = {
+    organization_id: orgId.trim(),
+    cookie_string: cookieString.trim(),
+    user_email: userEmail.trim(),
+    saved_at: new Date().toISOString()
+  };
+  
+  fs.writeFileSync(sessionFile, JSON.stringify(data, null, 2));
+  
+  // Set restrictive permissions
+  fs.chmodSync(sessionFile, 0o600);
+  
+  console.log();
+  console.log('✓ Session saved!');
+  console.log(`  Location: ${sessionFile}`);
+  console.log();
+  console.log('You can now run:');
+  console.log('  npm run http');
+  console.log();
+  console.log('To start the HTTP server for browser access!');
+  console.log();
+  console.log('⚠️  Security reminders:');
+  console.log('  - Keep this file secure (already set to 0600 permissions)');
+  console.log('  - Never commit it to git');
+  console.log('  - Refresh periodically (cookies expire)');
+  console.log('  - Only use for personal/local development');
+  
+  rl.close();
+}
+
+main().catch((error) => {
+  console.error('Setup failed:', error);
+  process.exit(1);
+});
